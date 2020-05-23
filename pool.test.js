@@ -30,7 +30,7 @@ function isRareSlotCard (card) {
   )
 }
 
-const pools = 1e2
+const pools = 1e5
 var results = {}
 times(30, n => {
   results[n + 1] = 0

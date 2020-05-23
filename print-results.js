@@ -11,13 +11,13 @@ module.exports = function printResults (results, pools) {
   console.log('uniques | proportion')
   console.log('--------|-----------')
   output.forEach(([count, proportion]) => {
-    console.log(`${count} | ${barGraph(proportion)} ${Math.floor(proportion * 100) / 100}`)
+    console.log(`${count} | ${barGraph(proportion)} ${Math.floor(proportion * 1e3) / 1e3}`)
   })
 }
 
 function barGraph (proportion, width = 40) {
   const scale = 3 // fudged to make graph look bigger
-  const barWidth = Math.floor(proportion * width) * 3
+  const barWidth = Math.floor(proportion * width * scale)
 
   if (barWidth > width) throw new Error('scaled too high')
 
