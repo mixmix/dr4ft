@@ -45,7 +45,7 @@ class Cols extends Component {
   render() {
     return (
       <div>
-        <Zones onMouseOver={this.onMouseEnter} zoneNames={this.props.zones} onMouseLeave={this.onMouseLeave} />
+        <Zones zoneNames={this.props.zones} onMouseOver={this.onMouseEnter} onMouseLeave={this.onMouseLeave} />
         <ImageHelper onMouseEnter={this.onMouseEnter} {...this.state} />
       </div>
     );
@@ -56,43 +56,41 @@ Cols.propTypes = {
   zones: PropTypes.array.isRequired
 };
 
-const Zones = ({onMouseOver, zoneNames, onMouseLeave}) => {
+const Zones = ({zoneNames, onMouseOver, onMouseLeave}) => {
   const renderZone = (zoneName) => {
     const zone = App.getSortedZone(zoneName);
     let sum = 0;
     let cols = [];
 
+    const prefferedType = "Creature"
     for (let key in zone) {
-      let items = zone[key].map((card, index) =>
-        <div
-          className={`${card.foil ? "foil-card": ""} card-col`}
-          key={index}
-          onClick={App._emit("click", zoneName, card)}
-          onMouseOver={e => onMouseOver(card, e)}
-          onMouseLeave={onMouseLeave} >
+      const prefferedItems = zone[key].filter((card) => card.type === prefferedType)
+      const otherItems = zone[key].filter((card) => card.type !== prefferedType)
 
-          {App.state.cardSize === "text"
-            ? <div><strong>{card.name}</strong> {card.manaCost}</div>
-            : <img
-              src={getCardSrc(card)}
-              onError= {getFallbackSrc(card)}
-              alt={card.name + " " + card.manaCost} />}
-        </div>
-      );
-
-      sum += items.length;
+      const colTotal = otherItems.length + prefferedItems.length;
+      sum += colTotal
+      // TODO extract minHeight style
       cols.push(
         <div key={key} className='col'>
           <div>
-            <strong>{`${key} (${items.length})`}</strong>
+            <strong>{`${key} (${colTotal})`}</strong>
           </div>
-          {items}
+          <div style={{ minHeight: 255 + 2 * 20 }} >
+            {otherItems.map((card, index) => (
+              Card({ card, index, zoneName, onMouseOver, onMouseLeave })
+            ))}
+          </div>
+          <div>
+            {prefferedItems.map((card, index) => (
+              Card({ card, index, zoneName, onMouseOver, onMouseLeave })
+            ))}
+          </div>
         </div>
       );
     }
 
     return (
-      <div key={zoneName} className='zone'>
+      <div key={zoneName} className={"zone " + zoneName}>
         <h1>
           <Spaced elements={[getZoneDisplayName(zoneName), sum]}/>
         </h1>
@@ -102,6 +100,32 @@ const Zones = ({onMouseOver, zoneNames, onMouseLeave}) => {
   };
 
   return zoneNames.map(renderZone);
+};
+
+const Card = ({ card, index, zoneName, onMouseOver, onMouseLeave }) => (
+  <div
+    className={`${card.foil ? "foil-card": ""} card-col`}
+    key={index}
+    onClick={App._emit("click", zoneName, card)}
+    onMouseOver={e => onMouseOver(card, e)}
+    onMouseLeave={onMouseLeave}
+  >
+
+    {App.state.cardSize === "text"
+      ? <div><strong>{card.name}</strong> {card.manaCost}</div>
+      : <img
+        src={getCardSrc(card)}
+        onError= {getFallbackSrc(card)}
+        alt={card.name + " " + card.manaCost} />}
+  </div>
+)
+
+Card.propTypes = {
+  card: PropTypes.object,
+  index: PropTypes.integer,
+  zoneName: PropTypes.string,
+  onMouseOver: PropTypes.func.isRequired,
+  onMouseLeave: PropTypes.func.isRequired
 };
 
 const ImageHelper = ({onMouseEnter, className, card}) => (
