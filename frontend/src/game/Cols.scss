@@ -1,0 +1,23 @@
+.Cols {
+  .card {
+    display: inline-flex;
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+    padding: 1px;
+  }
+
+  .card-col {
+    position: relative;
+    margin: 0;
+    cursor: pointer;
+    padding: 1px;
+  }
+
+  .col div:last-child img {
+    margin-bottom: -235px;
+  }
+  .col > div > div:last-child img {
+    margin-bottom: 0;
+  }
+}

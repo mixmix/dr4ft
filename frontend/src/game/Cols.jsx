@@ -6,6 +6,8 @@ import {getZoneDisplayName} from "../zones";
 import Spaced from "../components/Spaced";
 import {getCardSrc, getFallbackSrc} from "../cardimage";
 
+import './Cols.scss';
+
 class Cols extends Component {
   constructor(props) {
     super(props);
@@ -44,7 +46,7 @@ class Cols extends Component {
   }
   render() {
     return (
-      <div>
+      <div class="Cols">
         <Zones zoneNames={this.props.zones} onMouseOver={this.onMouseEnter} onMouseLeave={this.onMouseLeave} />
         <ImageHelper onMouseEnter={this.onMouseEnter} {...this.state} />
       </div>
@@ -102,6 +104,7 @@ const Zones = ({zoneNames, onMouseOver, onMouseLeave}) => {
   return zoneNames.map(renderZone);
 };
 
+// TODO extract Card from Cols + Grid
 const Card = ({ card, index, zoneName, onMouseOver, onMouseLeave }) => (
   <div
     className={`${card.foil ? "foil-card": ""} card-col`}
