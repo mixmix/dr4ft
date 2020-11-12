@@ -1,0 +1,25 @@
+.Grid {
+
+  .card {
+    // TODO extract from global?
+
+    &.placeholder {
+      background: gainsboro;
+      border: 2px solid #fff;
+    }
+  }
+
+  .placeholders {
+    position: relative;
+
+    h2 {
+      background: #fff;
+      padding: 10px;
+
+      position: absolute;
+      z-index: 10;
+      left: 30px;
+      top: 10px;
+    }
+  }
+}
