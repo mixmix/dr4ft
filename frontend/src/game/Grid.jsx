@@ -6,9 +6,10 @@ import App from "../app";
 import {getCardSrc, getFallbackSrc} from "../cardimage";
 import Spaced from "../components/Spaced";
 import {ZONE_PACK, getZoneDisplayName} from "../zones";
+import "./Grid.scss";
 
 const Grid = ({zones}) => (
-  <div>
+  <div class='Grid'>
     {zones.map(zone)}
   </div>
 );
@@ -43,6 +44,24 @@ const zone = (zoneName, index) => {
   const zoneTitle = zoneDisplayName + (zoneName === ZONE_PACK ? " " + App.state.round : "");
   const zoneDetails = getZoneDetails(App.state, zoneName, cards);
 
+  if (cards.length === 0 && zoneName === ZONE_PACK) {
+    const placeholders = Array(App.state.packSize - App.state.pickNumber % App.state.packSize)
+      .fill(0)
+      .map((_, i) => <CardPlacehoder key={i} />)
+
+    return (
+      <div className='zone' key={index}>
+        <h1>
+          <Spaced elements={[zoneTitle, zoneDetails]}/>
+        </h1>
+        <div class='placeholders'>
+          <h2 className='waiting'>Waiting for the next pack...</h2>
+          {placeholders}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className='zone' key={index}>
       <h1>
@@ -51,12 +70,22 @@ const zone = (zoneName, index) => {
       {cards.map((card, i) =>
         <Card key={i+zoneName+card.name+card.foil} card={card} zoneName={zoneName} />
       )}
-      {cards.length === 0 && zoneName === ZONE_PACK &&
-        <h2 className='waiting'>Waiting for the next pack...</h2>
-      }
     </div>
   );
 };
+
+class CardPlacehoder extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <span className='card placeholder'> </span>
+    );
+  }
+}
+
 class Card extends Component {
   constructor(props) {
     super(props);
@@ -117,11 +146,11 @@ class Card extends Component {
     );
   }
 }
-
 Card.propTypes = {
   card: PropTypes.object.isRequired,
   zoneName: PropTypes.string.isRequired
 };
+
 
 const CardImage = ({ mouseEntered, url, flippedIsBack, flippedNumber, imgUrl, scryfallId = "", name, manaCost, type = "", rarity = "", power = "", toughness = "", text = "", loyalty= "", setCode = "", number = "" }) => (
   App.state.cardSize === "text"
