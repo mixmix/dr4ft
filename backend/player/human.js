@@ -1,6 +1,7 @@
 const {pull, find, pullAllWith, remove, times, sample, chain} = require("lodash");
 
 const Player = require("./index");
+const fillSelected = require("./fill-selected")
 const util = require("../util");
 const hash = require("../hash");
 const logger = require("../logger");
@@ -16,6 +17,7 @@ module.exports = class Human extends Player {
     this.GameId = gameId;
     this.picksPerPack = picksPerPack;
     this.burnsPerPack = burnsPerPack;
+    this.selected = { picks: [], burns: [] }
     this.attach(sock);
   }
 
@@ -148,31 +150,12 @@ module.exports = class Human extends Player {
     this.emit("pass", pack);
   }
   handleTimeout() {
-    //TODO: filter instead of removing a copy of a pack
     const pack = Array.from(this.packs[0]);
-
-    pullAllWith(pack, this.selected.picks, (card, cardId) => card.cardId === cardId);
-    pullAllWith(pack, this.selected.burns, (card, cardId) => card.cardId === cardId);
-
-
-    // pick cards
-    const remainingToPick = Math.min(pack.length, this.picksPerPack) - this.selected.picks.length;
-    times(remainingToPick, () => {
-      const randomCard = sample(pack);
-      this.selected.picks.push(randomCard.cardId);
-      pull(pack, randomCard);
-    });
-
-    // burn cards
-    const remainingToBurn = Math.min(this.burnsPerPack, pack.length) - this.selected.burns.length;
-    times(remainingToBurn, () => {
-      const randomCard = sample(pack);
-      this.selected.burns.push(randomCard.cardId);
-      pull(pack, randomCard);
-    });
+    this.selected = fillSelected(pack.map(c => c.cardId), this.selected, this.picksPerPack, this.burnsPerPack)
 
     this.confirmSelection();
   }
+
   kick() {
     this.send = () => {};
     while(this.packs.length)

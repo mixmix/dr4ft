@@ -110,5 +110,5 @@ module.exports = {
     assert(typeof shufflePlayers === "boolean", "shufflePlayers must be a boolean");
     assert(useTimer && ["Fast", "Moderate", "Slow", "Leisurely"].includes(timerLength),
       "timerLength must be Fast, Moderate, Slow or Leisurely");
-  }
+  },
 };
